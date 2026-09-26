@@ -2,14 +2,11 @@
 
 class HomeController
 {
-    private array $config;
-
-    public function __construct(array $config)
+    public function __construct(PDO $pdo)
     {
-        $this->config = $config;
     }
 
-    public function index()
+    public function index(): void
     {
         require __DIR__ . '/../views/home.php';
     }

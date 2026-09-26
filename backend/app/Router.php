@@ -3,11 +3,11 @@
 class Router
 {
     private array $routes = [];
-    private array $config;
+    private PDO $pdo;
 
-    public function __construct(array $config)
+    public function __construct(PDO $pdo)
     {
-        $this->config = $config;
+        $this->pdo = $pdo;
     }
 
     public function get(string $path, array $action): void
@@ -21,17 +21,17 @@ class Router
     }
 
     public function dispatch(string $method, string $uri): void
-{
-    if (!isset($this->routes[$method][$uri])) {
-        http_response_code(404);
-        echo '404 - Ruta no encontrada';
-        return;
+    {
+        if (!isset($this->routes[$method][$uri])) {
+            http_response_code(404);
+            echo '404 - Ruta no encontrada';
+            return;
+        }
+
+        [$controller, $action] = $this->routes[$method][$uri];
+
+        $instance = new $controller($this->pdo);
+
+        $instance->$action();
     }
-
-    [$controller, $action] = $this->routes[$method][$uri];
-
-    $instance = new $controller($this->config);
-
-    $instance->$action();
-}
 }

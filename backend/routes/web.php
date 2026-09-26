@@ -2,10 +2,13 @@
 
 require_once __DIR__ . '/../app/Router.php';
 require_once __DIR__ . '/../app/controllers/HomeController.php';
+require_once __DIR__ . '/../app/controllers/AuthController.php';
 
-$router = new Router($config);
+$router = new Router($pdo);
 
 $router->get('/', [HomeController::class, 'index']);
+
+$router->post('/api/auth/register', [AuthController::class, 'register']);
 
 $router->dispatch(
     $_SERVER['REQUEST_METHOD'],

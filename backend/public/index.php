@@ -6,4 +6,8 @@ loadEnv(__DIR__ . '/../.env');
 
 $config = require __DIR__ . '/../config/config.php';
 
+require_once __DIR__ . '/../config/database.php';
+
+$pdo = getDatabaseConnection();
+
 require_once __DIR__ . '/../routes/web.php';
