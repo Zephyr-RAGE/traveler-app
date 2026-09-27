@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../exceptions/ApiException.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -194,19 +195,8 @@ class AuthTokenMiddleware
         }
     }
 
-    private function unauthorized(string $code): never
-    {
-        http_response_code(401);
-
-        header('Content-Type: application/json; charset=utf-8');
-
-        echo json_encode([
-            'success' => false,
-            'error' => [
-                'code' => $code
-            ]
-        ]);
-
-        exit;
-    }
+   private function unauthorized(string $code): never
+{
+    throw new ApiException(401, $code);
+}
 }

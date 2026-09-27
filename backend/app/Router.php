@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../exceptions/ApiException.php';
+
 class Router
 {
     private array $routes = [];
@@ -35,10 +37,17 @@ class Router
     public function dispatch(string $method, string $uri): void
     {
         if (!isset($this->routes[$method][$uri])) {
-            http_response_code(404);
-            echo '404 - Ruta no encontrada';
-            return;
-        }
+    if (str_starts_with($uri, '/api/')) {
+        throw new ApiException(
+            404,
+            'NOT_FOUND'
+        );
+    }
+
+    http_response_code(404);
+    echo '404 - Ruta no encontrada';
+    return;
+}
 
         $route = $this->routes[$method][$uri];
 
