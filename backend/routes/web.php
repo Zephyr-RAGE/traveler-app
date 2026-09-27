@@ -19,7 +19,14 @@ $router->get(
     true
 );
 
+$router->post(
+    '/api/auth/logout',
+    [AuthController::class, 'logout'],
+    true
+);
+
 $router->dispatch(
     $_SERVER['REQUEST_METHOD'],
     parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
 );
+

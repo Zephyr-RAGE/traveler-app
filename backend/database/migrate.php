@@ -8,6 +8,7 @@ require_once __DIR__ . '/migrations/003_create_ciudades.php';
 require_once __DIR__ . '/migrations/004_create_usuarios.php';
 require_once __DIR__ . '/migrations/005_create_historial.php';
 require_once __DIR__ . '/migrations/006_create_tokens_revocados.php';
+require_once __DIR__ . '/migrations/007_create_refresh_tokens.php';
 
 $pdo = getDatabaseConnection();
 
@@ -18,6 +19,7 @@ $migrations = [
     new CreateUsuarios(),
     new CreateHistorial(),
     new CreateTokensRevocados(),
+    new CreateRefreshTokens(),
 ];
 
 foreach ($migrations as $migration) {

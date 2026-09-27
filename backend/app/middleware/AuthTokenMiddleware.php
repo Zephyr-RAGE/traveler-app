@@ -178,7 +178,10 @@ class AuthTokenMiddleware
                 $this->unauthorized('AUTH_TOKEN_INVALID');
             }
 
-            return $usuario;
+            return [
+    'usuario' => $usuario,
+    'jti' => $payload['jti']
+];
 
         } catch (\Firebase\JWT\ExpiredException $e) {
 

@@ -335,6 +335,32 @@ $accessToken = $serializer->serialize($jwe);
 
 $refreshToken = bin2hex(random_bytes(32));
 
+$refreshTokenHash = hash('sha256', $refreshToken);
+
+$refreshExpiresAt = date(
+    'Y-m-d H:i:sP',
+    time() + (60 * 60 * 24 * 30)
+);
+
+$stmt = $this->pdo->prepare("
+    INSERT INTO refresh_tokens (
+        usuario_id,
+        token_hash,
+        expires_at
+    )
+    VALUES (
+        :usuario_id,
+        :token_hash,
+        :expires_at
+    )
+");
+
+$stmt->execute([
+    ':usuario_id' => (int) $usuario['id'],
+    ':token_hash' => $refreshTokenHash,
+    ':expires_at' => $refreshExpiresAt
+]);
+
 http_response_code(200);
 
 echo json_encode([
@@ -347,15 +373,76 @@ echo json_encode([
 ]);
     }
 
-public function me(?array $usuario): void
+public function me(?array $auth): void
 {
     header('Content-Type: application/json; charset=utf-8');
 
     echo json_encode([
         'success' => true,
         'data' => [
-            'usuario' => $usuario
+            'usuario' => $auth['usuario']
         ]
     ]);
 }
+
+public function logout(?array $auth): void
+{
+    header('Content-Type: application/json; charset=utf-8');
+
+    $input = json_decode(
+        file_get_contents('php://input'),
+        true
+    );
+
+    $refreshToken = $input['refresh_token'] ?? null;
+
+    if (!$refreshToken) {
+        http_response_code(400);
+
+        echo json_encode([
+            'success' => false,
+            'error' => [
+                'code' => 'REFRESH_TOKEN_MISSING'
+            ]
+        ]);
+
+        return;
+    }
+
+    $jti = $auth['jti'];
+
+    // Revocar access token
+    $stmt = $this->pdo->prepare("
+        INSERT INTO tokens_revocados (jti)
+        VALUES (:jti)
+        ON CONFLICT (jti) DO NOTHING
+    ");
+
+    $stmt->execute([
+        ':jti' => $jti
+    ]);
+
+    // Revocar refresh token
+    $refreshTokenHash = hash(
+        'sha256',
+        $refreshToken
+    );
+
+    $stmt = $this->pdo->prepare("
+        UPDATE refresh_tokens
+        SET revoked_at = CURRENT_TIMESTAMP
+        WHERE token_hash = :token_hash
+          AND revoked_at IS NULL
+    ");
+
+    $stmt->execute([
+        ':token_hash' => $refreshTokenHash
+    ]);
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Sesión cerrada correctamente'
+    ]);
+}
+
 }
