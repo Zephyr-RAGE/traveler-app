@@ -36,25 +36,60 @@ class Router
 
     public function dispatch(string $method, string $uri): void
     {
-        if (!isset($this->routes[$method][$uri])) {
-    if (str_starts_with($uri, '/api/')) {
-        throw new ApiException(
-            404,
-            'NOT_FOUND'
-        );
-    }
+        $route = null;
+        $params = [];
 
-    http_response_code(404);
-    echo '404 - Ruta no encontrada';
-    return;
-}
+        // 1. Buscar coincidencia exacta
+        if (isset($this->routes[$method][$uri])) {
+            $route = $this->routes[$method][$uri];
+        } else {
+            // 2. Buscar rutas con parámetros dinámicos
+            foreach ($this->routes[$method] ?? [] as $path => $registeredRoute) {
+                $pattern = preg_replace(
+                    '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+                    '([^/]+)',
+                    $path
+                );
 
-        $route = $this->routes[$method][$uri];
+                $pattern = '#^' . $pattern . '$#';
+
+                if (preg_match($pattern, $uri, $matches)) {
+                    $route = $registeredRoute;
+
+                    preg_match_all(
+                        '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+                        $path,
+                        $parameterNames
+                    );
+
+                    foreach ($parameterNames[1] as $index => $name) {
+                        $params[$name] = $matches[$index + 1];
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        // 3. Si no existe la ruta
+        if ($route === null) {
+            if (str_starts_with($uri, '/api/')) {
+                throw new ApiException(
+                    404,
+                    'NOT_FOUND'
+                );
+            }
+
+            http_response_code(404);
+            echo '404 - Ruta no encontrada';
+            return;
+        }
 
         [$controller, $action] = $route['action'];
 
         $usuario = null;
 
+        // 4. Middleware
         if ($route['protected']) {
             require_once __DIR__ . '/middleware/AuthTokenMiddleware.php';
 
@@ -63,8 +98,12 @@ class Router
             $usuario = $middleware->handle();
         }
 
+        // 5. Controller
         $instance = new $controller($this->pdo);
 
-        $instance->$action($usuario);
+        $instance->$action(
+            $usuario,
+            ...array_values($params)
+        );
     }
 }
