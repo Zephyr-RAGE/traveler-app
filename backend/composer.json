@@ -1,0 +1,8 @@
+{
+    "require": {
+        "firebase/php-jwt": "^7.2",
+        "web-token/jwt-framework": "^4.2",
+        "web-token/jwt-encryption-algorithm-dir": "^2.2",
+        "web-token/jwt-encryption-algorithm-aesgcm": "^2.2"
+    }
+}
