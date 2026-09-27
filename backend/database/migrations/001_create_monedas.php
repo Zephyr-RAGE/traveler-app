@@ -1,28 +1,16 @@
 <?php
 
-class MonedasSeeder
+class CreateMonedas
 {
-    public function run(PDO $pdo): void
+    public function up(PDO $pdo): void
     {
-        $monedas = [
-            ['GBP', 'Libra esterlina', '£'],
-            ['JPY', 'Yen japonés', '¥'],
-            ['INR', 'Rupia india', '₹'],
-            ['DKK', 'Corona danesa', 'kr'],
-        ];
-
-        $stmt = $pdo->prepare("
-            INSERT INTO monedas (codigo, nombre, simbolo)
-            VALUES (:codigo, :nombre, :simbolo)
-            ON CONFLICT (codigo) DO NOTHING
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS monedas (
+                id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                codigo VARCHAR(3) NOT NULL UNIQUE,
+                nombre VARCHAR(100) NOT NULL,
+                simbolo VARCHAR(10) NOT NULL
+            )
         ");
-
-        foreach ($monedas as $moneda) {
-            $stmt->execute([
-                ':codigo' => $moneda[0],
-                ':nombre' => $moneda[1],
-                ':simbolo' => $moneda[2],
-            ]);
-        }
     }
 }

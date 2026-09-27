@@ -346,4 +346,16 @@ echo json_encode([
     ]
 ]);
     }
+
+public function me(?array $usuario): void
+{
+    header('Content-Type: application/json; charset=utf-8');
+
+    echo json_encode([
+        'success' => true,
+        'data' => [
+            'usuario' => $usuario
+        ]
+    ]);
+}
 }

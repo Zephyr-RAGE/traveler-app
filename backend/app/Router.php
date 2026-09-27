@@ -10,14 +10,26 @@ class Router
         $this->pdo = $pdo;
     }
 
-    public function get(string $path, array $action): void
-    {
-        $this->routes['GET'][$path] = $action;
+    public function get(
+        string $path,
+        array $action,
+        bool $protected = false
+    ): void {
+        $this->routes['GET'][$path] = [
+            'action' => $action,
+            'protected' => $protected
+        ];
     }
 
-    public function post(string $path, array $action): void
-    {
-        $this->routes['POST'][$path] = $action;
+    public function post(
+        string $path,
+        array $action,
+        bool $protected = false
+    ): void {
+        $this->routes['POST'][$path] = [
+            'action' => $action,
+            'protected' => $protected
+        ];
     }
 
     public function dispatch(string $method, string $uri): void
@@ -28,10 +40,22 @@ class Router
             return;
         }
 
-        [$controller, $action] = $this->routes[$method][$uri];
+        $route = $this->routes[$method][$uri];
+
+        [$controller, $action] = $route['action'];
+
+        $usuario = null;
+
+        if ($route['protected']) {
+            require_once __DIR__ . '/middleware/AuthTokenMiddleware.php';
+
+            $middleware = new AuthTokenMiddleware($this->pdo);
+
+            $usuario = $middleware->handle();
+        }
 
         $instance = new $controller($this->pdo);
 
-        $instance->$action();
+        $instance->$action($usuario);
     }
 }

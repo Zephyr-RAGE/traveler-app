@@ -13,6 +13,12 @@ $router->post('/api/auth/register', [AuthController::class, 'register']);
 
 $router->post('/api/auth/login', [AuthController::class, 'login']);
 
+$router->get(
+    '/api/auth/me',
+    [AuthController::class, 'me'],
+    true
+);
+
 $router->dispatch(
     $_SERVER['REQUEST_METHOD'],
     parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
