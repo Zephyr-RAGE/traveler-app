@@ -4,6 +4,7 @@ require_once __DIR__ . '/../app/Router.php';
 require_once __DIR__ . '/../app/controllers/HomeController.php';
 require_once __DIR__ . '/../app/controllers/AuthController.php';
 require_once __DIR__ . '/../app/controllers/PaisController.php';
+require_once __DIR__ . '/../app/controllers/TravelDataController.php';
 
 $router = new Router($pdo);
 
@@ -34,6 +35,12 @@ $router->get(
 $router->get(
     '/api/paises',
     [PaisController::class, 'index'],
+    true
+);
+
+$router->post(
+    '/api/travel-data',
+    [TravelDataController::class, 'obtenerDatosCiudad'],
     true
 );
 

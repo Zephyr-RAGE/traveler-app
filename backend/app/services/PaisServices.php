@@ -59,4 +59,38 @@ class PaisServices
 
         return (bool) $stmt->fetchColumn();
     }
+
+    public function obtenerCiudadConMoneda(
+    int $ciudadId
+): ?array {
+    $stmt = $this->pdo->prepare("
+        SELECT
+            c.id,
+            c.nombre,
+            p.id AS pais_id,
+            p.nombre AS pais_nombre,
+            p.codigo AS pais_codigo,
+            m.codigo AS moneda_codigo,
+            m.nombre AS moneda_nombre,
+            m.simbolo AS moneda_simbolo
+        FROM ciudades c
+        INNER JOIN paises p
+            ON p.id = c.pais_id
+        INNER JOIN monedas m
+            ON m.id = p.moneda_id
+        WHERE c.id = :ciudad_id
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        ':ciudad_id' => $ciudadId
+    ]);
+
+    $ciudad = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $ciudad ?: null;
+}
+
+
+
 }
