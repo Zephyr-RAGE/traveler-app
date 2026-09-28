@@ -1,0 +1,17 @@
+.notificacion-exito {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+
+  background-color: #198754;
+  color: white;
+
+  padding: 15px 25px;
+  border-radius: 8px;
+
+  font-size: 16px;
+  font-weight: 500;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}

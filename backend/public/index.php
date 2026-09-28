@@ -4,6 +4,10 @@ require_once __DIR__ . '/../config/env.php';
 
 loadEnv(__DIR__ . '/../.env');
 
+require_once __DIR__ . '/../config/cors.php';
+
+handleCors();
+
 if (filter_var(env('APP_DEBUG', false), FILTER_VALIDATE_BOOLEAN) === false) {
     ini_set('display_errors', '0');
     ini_set('display_startup_errors', '0');

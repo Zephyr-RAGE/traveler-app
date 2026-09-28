@@ -1,0 +1,87 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Crear cuenta</h2>
+
+          <!-- NOTIFICACIÓN -->
+          @if (mensaje) {
+            <div class="alert alert-success text-center" role="alert">✓ {{ mensaje }}</div>
+          }
+
+          @if (error) {
+            <div class="alert alert-danger text-center" role="alert">
+              {{ error }}
+            </div>
+          }
+
+          <form (ngSubmit)="registrar()">
+            <div class="mb-3">
+              <label for="nombre" class="form-label"> Nombre </label>
+
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                name="nombre"
+                [(ngModel)]="nombre"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="correo" class="form-label"> Correo </label>
+
+              <input
+                id="correo"
+                type="email"
+                class="form-control"
+                name="correo"
+                [(ngModel)]="correo"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label"> Contraseña </label>
+
+              <input
+                id="password"
+                type="password"
+                class="form-control"
+                name="password"
+                [(ngModel)]="password"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="passwordConfirmation" class="form-label"> Confirmar contraseña </label>
+
+              <input
+                id="passwordConfirmation"
+                type="password"
+                class="form-control"
+                name="passwordConfirmation"
+                [(ngModel)]="passwordConfirmation"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="idioma" class="form-label"> Idioma </label>
+
+              <select id="idioma" class="form-select" name="idioma" [(ngModel)]="idioma">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Registrarme</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
